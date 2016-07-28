@@ -1,8 +1,11 @@
 import AppDispatcher from '../dispatcher'
+import { DELETE_ARTICLE, LOAD_ALL_ARTICLES } from '../constants'
+import { loadAllArticlesCall, ayncACFactory } from './webUtils'
+import $ from 'jquery'
 
- function deleteArticle(id) {
+ export function deleteArticle(id) {
 	const action = {
-		type: 'DELETE_ARTICLE',
+		type: DELETE_ARTICLE,
 		payload: {
 			id
 		}
@@ -11,4 +14,4 @@ import AppDispatcher from '../dispatcher'
 	AppDispatcher.dispatch(action)
 }
 
-export default deleteArticle
+export const loadAllArticles = ayncACFactory(loadAllArticlesCall, LOAD_ALL_ARTICLES)

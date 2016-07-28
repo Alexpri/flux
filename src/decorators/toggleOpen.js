@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { Component } from 'react'
 
-export default (Component) => class DecoratedComponent extends React.Component {
+export default (Component) => class DecoratedComponent extends Component {
     state = {
         isOpen: false
     }

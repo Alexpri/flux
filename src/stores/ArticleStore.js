@@ -1,49 +1,38 @@
-import { EventEmitter } from 'events'
-import AppDispatcher from '../dispatcher'
+import BasicStore from './BasicStore'
+import { DELETE_ARTICLE, LOAD_ALL_ARTICLES, START, SUCCESS, FAIL } from '../constants'
 
-class ArticleStore extends EventEmitter {
+class ArticleStore extends BasicStore {
 	
-	constructor(initialState = []) {
-		super()
-		this._items = {}
-		initialState.forEach(this._add)
+	constructor(...args) {
+		super(...args)
+		this.error = []
 
-		AppDispatcher.register((action) => {
+		this._registerActionSubscription((action) => {
 			const { type, payload } = action
 
 			switch (type) {
-				case 'DELETE_ARTICLE':
+				case DELETE_ARTICLE:
 					this._delete(payload.id)
+					break
+
+				case LOAD_ALL_ARTICLES + START:
+					this.loading = true
+
+				case LOAD_ALL_ARTICLES + SUCCESS:
+					payload.response.forEach(this._add)
+					this.loading = false
+					break
+
+				case LOAD_ALL_ARTICLES + FAIL:
+					this.error.push(payload.error)
 					this.emitChange()
 					break
+
+				default return
 			}
+
+			this.emitChange()
 		})
-	}
-
-	getAll() {
-		return Object.keys(this._items).map(this.getById)
-	}
-
-	getById = (id) => this._items[id]
-
-	_delete(id) {
-		delete this._items[id]
-	}
-
-	_add = (item) => {
-		this._items[item.id] = item
-	}
-
-	addChangeListener(callback) {
-		this.on('SOME_INTERNAL_EVENT', callback)
-	}
-
-	removeChangeListener(callback) {
-		this.removeListener('SOME_INTERNAL_EVENT', callback)
-	}
-
-	emitChange(){
-		this.emit('SOME_INTERNAL_EVENT')
 	}
 }
 
